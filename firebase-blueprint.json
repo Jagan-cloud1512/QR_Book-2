@@ -1,0 +1,38 @@
+{
+  "entities": {
+    "patrons": {
+      "title": "Patron Accounts",
+      "description": "Exclusive patron/user accounts registered for the mobile shelf locator. Distinct from admin users.",
+      "type": "object",
+      "properties": {
+        "username": { "type": "string" },
+        "passwordHash": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["patron"] },
+        "appSource": { "type": "string" }
+      },
+      "required": ["username", "passwordHash", "createdAt", "role"]
+    },
+    "books": {
+      "title": "Shelf Book Items",
+      "description": "Books located on physical shelves.",
+      "type": "object",
+      "properties": {
+        "bookId": { "type": "string" },
+        "title": { "type": "string" },
+        "author": { "type": "string" },
+        "row": { "type": "number" },
+        "col": { "type": "string" },
+        "qty": { "type": "number" },
+        "section": { "type": "string" },
+        "status": { "type": "string", "enum": ["Available", "Reserved", "Out of Stock"] },
+        "reservedBy": { "type": ["string", "null"] },
+        "holdExpiresAt": { "type": ["number", "null"] },
+        "queue": { "type": "array", "items": { "type": "string" } },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["bookId", "title", "row", "col", "status", "queue"]
+    }
+  }
+}

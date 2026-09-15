@@ -1,0 +1,10 @@
+{
+  "name": "ShelfLocator",
+  "description": "Real-time indoor library bookshelf locator with QR sync, 2D matrix shelf map, and 5-minute thread-safe reservation holds with waitlist management.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

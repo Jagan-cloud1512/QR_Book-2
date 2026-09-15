@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-inter);
+    background-color: #0b1326;
+    color: #dae2fd;
+  }
+}
+
+.font-matrix-coordinate,
+.font-timer-display {
+  font-family: var(--font-mono);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+.shelf-texture {
+  background: linear-gradient(to bottom, #1e2535 0%, #171f33 100%);
+  border-bottom: 4px solid #0f1523;
+  box-shadow: inset 0 -2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.book-spine {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0) 12%,
+    rgba(255, 255, 255, 0) 88%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  box-shadow: inset 2px 0 3px rgba(255, 255, 255, 0.12), inset -2px 0 3px rgba(0, 0, 0, 0.35);
+}
+
+.glow-active {
+  box-shadow: 0 0 16px 0 rgba(192, 193, 255, 0.35);
+}
+
+.pulse-border {
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(192, 193, 255, 0.5);
+    border-color: rgba(192, 193, 255, 0.9);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(192, 193, 255, 0);
+    border-color: rgba(192, 193, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(192, 193, 255, 0);
+    border-color: rgba(192, 193, 255, 0.9);
+  }
+}
+
+.blink {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
