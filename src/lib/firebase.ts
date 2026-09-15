@@ -1,56 +1,70 @@
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getFirestore, Firestore } from 'firebase/firestore';
-import { getAuth, Auth, signInAnonymously } from 'firebase/auth';
-import firebaseConfigData from '../../firebase-applet-config.json';
+import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+import { getFirestore, Firestore } from "firebase/firestore";
+import { getAuth, Auth, signInAnonymously } from "firebase/auth";
 
-// Web Portal external project config from user
-export const PORTAL_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyBDqLCWXZvpEVvvUR3tvzvJ7yoJX8IGY4k",
-  authDomain: "qr-book-e34d4.firebaseapp.com",
-  projectId: "qr-book-e34d4",
-  storageBucket: "qr-book-e34d4.firebasestorage.app",
-  messagingSenderId: "917075602202",
-  appId: "1:917075602202:web:510380eb9085af9aaadaa3"
+function requiredFirebaseEnv(name: string): string {
+  const value = import.meta.env[name] as string | undefined;
+  if (!value) {
+    throw new Error(`Missing required Firebase environment variable: ${name}`);
+  }
+  return value;
+}
+
+const studioFirebaseConfig = {
+  apiKey: requiredFirebaseEnv("VITE_STUDIO_FIREBASE_API_KEY"),
+  authDomain: requiredFirebaseEnv("VITE_STUDIO_FIREBASE_AUTH_DOMAIN"),
+  projectId: requiredFirebaseEnv("VITE_STUDIO_FIREBASE_PROJECT_ID"),
+  storageBucket: requiredFirebaseEnv("VITE_STUDIO_FIREBASE_STORAGE_BUCKET"),
+  messagingSenderId: requiredFirebaseEnv(
+    "VITE_STUDIO_FIREBASE_MESSAGING_SENDER_ID",
+  ),
+  appId: requiredFirebaseEnv("VITE_STUDIO_FIREBASE_APP_ID"),
 };
 
-// Studio environment config
-const studioFirebaseConfig = {
-  apiKey: firebaseConfigData.apiKey,
-  authDomain: firebaseConfigData.authDomain,
-  projectId: firebaseConfigData.projectId,
-  storageBucket: firebaseConfigData.storageBucket,
-  messagingSenderId: firebaseConfigData.messagingSenderId,
-  appId: firebaseConfigData.appId,
+const portalFirebaseConfig = {
+  apiKey: requiredFirebaseEnv("VITE_PORTAL_FIREBASE_API_KEY"),
+  authDomain: requiredFirebaseEnv("VITE_PORTAL_FIREBASE_AUTH_DOMAIN"),
+  projectId: requiredFirebaseEnv("VITE_PORTAL_FIREBASE_PROJECT_ID"),
+  storageBucket: requiredFirebaseEnv("VITE_PORTAL_FIREBASE_STORAGE_BUCKET"),
+  messagingSenderId: requiredFirebaseEnv(
+    "VITE_PORTAL_FIREBASE_MESSAGING_SENDER_ID",
+  ),
+  appId: requiredFirebaseEnv("VITE_PORTAL_FIREBASE_APP_ID"),
 };
 
 // Initialize Studio App ([DEFAULT])
-export const studioApp: FirebaseApp = getApps().find((a) => a.name === '[DEFAULT]') || initializeApp(studioFirebaseConfig);
+export const studioApp: FirebaseApp =
+  getApps().find((a) => a.name === "[DEFAULT]") ||
+  initializeApp(studioFirebaseConfig);
 
 // Initialize Web Portal App (qr-book-e34d4)
-export const portalApp: FirebaseApp = getApps().find((a) => a.name === 'qr-book-portal') || initializeApp(PORTAL_FIREBASE_CONFIG, 'qr-book-portal');
+export const portalApp: FirebaseApp =
+  getApps().find((a) => a.name === "qr-book-portal") ||
+  initializeApp(portalFirebaseConfig, "qr-book-portal");
 
 // Web Portal Firestore DB (qr-book-e34d4)
 export const portalDb: Firestore = getFirestore(portalApp);
 
 // Studio Named database (ai-studio-...)
-export const namedDb: Firestore | null = firebaseConfigData.firestoreDatabaseId
-  ? getFirestore(studioApp, firebaseConfigData.firestoreDatabaseId)
+export const namedDb: Firestore | null = import.meta.env
+  .VITE_STUDIO_FIRESTORE_DATABASE_ID
+  ? getFirestore(studioApp, import.meta.env.VITE_STUDIO_FIRESTORE_DATABASE_ID)
   : null;
 
 // Studio Default standard database (default)
 export const defaultDb: Firestore = getFirestore(studioApp);
 
-export type DbTargetType = 'portal' | 'named' | 'default';
+export type DbTargetType = "portal" | "named" | "default";
 
 // Active DB getter (default to 'portal' because user's web portal writes to qr-book-e34d4)
 let currentDatabaseTarget: DbTargetType =
-  (localStorage.getItem('shelf_db_target') as DbTargetType) || 'portal';
+  (localStorage.getItem("shelf_db_target") as DbTargetType) || "portal";
 
 export function getActiveDb(): Firestore {
-  if (currentDatabaseTarget === 'portal') {
+  if (currentDatabaseTarget === "portal") {
     return portalDb;
   }
-  if (currentDatabaseTarget === 'named' && namedDb) {
+  if (currentDatabaseTarget === "named" && namedDb) {
     return namedDb;
   }
   return defaultDb;
@@ -58,14 +72,15 @@ export function getActiveDb(): Firestore {
 
 export function setDatabaseTarget(target: DbTargetType) {
   currentDatabaseTarget = target;
-  localStorage.setItem('shelf_db_target', target);
+  localStorage.setItem("shelf_db_target", target);
 }
 
 export function getDatabaseTarget(): DbTargetType {
   return currentDatabaseTarget;
 }
 
-export const namedDatabaseId = firebaseConfigData.firestoreDatabaseId || '';
+export const namedDatabaseId =
+  import.meta.env.VITE_STUDIO_FIRESTORE_DATABASE_ID || "";
 
 export const db: Firestore = getActiveDb();
 
@@ -80,10 +95,10 @@ export async function initAuth(): Promise<string> {
     const userCredential = await signInAnonymously(auth);
     return userCredential.user.uid;
   } catch (err) {
-    let fallbackUid = localStorage.getItem('shelf_patron_uid');
+    let fallbackUid = localStorage.getItem("shelf_patron_uid");
     if (!fallbackUid) {
       fallbackUid = `patron_${Math.random().toString(36).substring(2, 9)}`;
-      localStorage.setItem('shelf_patron_uid', fallbackUid);
+      localStorage.setItem("shelf_patron_uid", fallbackUid);
     }
     return fallbackUid;
   }
